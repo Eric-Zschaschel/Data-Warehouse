@@ -4,18 +4,27 @@ from sql_queries import create_table_queries, drop_table_queries
 
 
 def drop_tables(cur, conn):
+    """
+    Drop pre-existing tables to be able to create them from scratch
+    """
     for query in drop_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def create_tables(cur, conn):
+    """
+    Create staging and dimensional tables declared on sql_queries script
+    """
     for query in create_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def main():
+    """
+    Set up the database tables, create needed tables with the appropriate columns and constricts
+    """
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 

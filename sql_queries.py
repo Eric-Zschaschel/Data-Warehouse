@@ -60,11 +60,11 @@ staging_events_create = ("""
 songplays_create = ("""
     CREATE TABLE IF NOT EXISTS songplays (
         PRIMARY KEY (start_time, user_id),
-        start_time  TIMESTAMP,
-        user_id     INTEGER,
+        start_time  TIMESTAMP NOT NULL,
+        user_id     INTEGER NOT NULL,
         level       VARCHAR,
-        song_id     VARCHAR(64),
-        artist_id   VARCHAR(64),
+        song_id     VARCHAR(64) NOT NULL,
+        artist_id   VARCHAR(64) NOT NULL,
         session_id  INTEGER,
         location    VARCHAR,
         user_agent  VARCHAR,
@@ -94,7 +94,7 @@ songs_create = ("""
         PRIMARY KEY (song_id),
         song_id     VARCHAR(64) NOT NULL,
         title       VARCHAR(256),
-        artist_id   VARCHAR(64),
+        artist_id   VARCHAR(64) NOT NULL,
         year        INTEGER,
         duration    DOUBLE PRECISION,
         FOREIGN KEY (artist_id) REFERENCES artists (artist_id)
@@ -237,11 +237,14 @@ songplays_insert = ("""
          SELECT g.ts, g.userId, g.level, h.song_id,
                 h.artist_id, g.sessionId, g.location, g.userAgent
            FROM staging_events g
-                LEFT JOIN staging_songs h
+                INNER JOIN staging_songs h
                 ON g.song = h.title
                     AND g.length = h.duration
                     AND g.artist = h.artist_name
-          WHERE page = 'NextSong'
+          WHERE g.page = 'NextSong'
+            AND h.song_id IS NOT NULL
+            AND h.artist_id IS NOT NULL
+            AND g.ts IS NOT NULL
 """)
 
 
